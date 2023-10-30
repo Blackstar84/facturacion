@@ -1,0 +1,92 @@
+<div class="modal-dialog modal-lg">
+  <div class="modal-content">
+    {% if obj %}
+    <form method="POST" role="form" class="form-inline" action="{% url 'cmp:proveedor_edit' obj.pk %}" >
+    {% else %}
+    <form method="POST" role="form" class="form-inline" action="{% url 'cmp:proveedor_new' %}" >
+    {% endif %}
+    
+      {% csrf_token %}
+      <div class="col-xl-12 col-md-12 mb-12">
+        {% if obj %}
+        <div class="card border-left-warning shadow h-100 py-2">
+        {% else %}
+        <div class="card border-left-success shadow h-100 py-2">
+        {% endif %}
+        <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div
+                  class="text-xs font-weight-bold text-primary text-uppercase mb-1"
+                >
+                  {% if obj %}Editar {% else %} Nuevo {% endif %} Proveedor
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="row">{{ form.as_p }}</div>
+                {% comment %} {{ form.as_p }} {% endcomment %}
+                <div class="dropdown-divider"></div>
+                <div class="row">
+                  <div class="col">
+                    <button type="submit" class="btn btn-danger">
+                      <span class="fa fa-save"></span> Guardar
+                    </button>
+                    {% comment %} <a href="{% url 'inv:um_list' %}" class="btn btn-success"
+                      ><span class="fa fa-undo"></span> Cancelar</a
+                    > {% endcomment %}
+                    <button type="button" class="btn btn-success" onclick="return cerrar_modal()">Cancelar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<script>
+$(function() {
+
+    var url = $("form").attr("action"); // Capturamos el acción para ver si es tipo new o edit
+    // Esto nos devolverá la url /cmp/proveedores/new en caso de que sea un nuevo registro
+    // o /cmp/proveedores/edit/1 en caso de edición el id es el numero que aparece al final
+    
+    // Como estamos trabajando con Django necesitamos el token de seguridad
+    var token = jQuery("[name=csrfmiddlewaretoken]").val();
+
+    $("form").submit(function(e){
+        e.preventDefault();
+        //alert(url);
+        //alert(token);
+        // Este form data tendrá todos los valores del formulario dentro de un array
+        // Para esto utilizamos el serializeArray()
+        var formData = $("form").serializeArray();
+        //console.log(formData);
+        $.ajax({
+            url:url,
+            method:"POST",
+            headers: {'X-CSRFToken': token },
+            data: formData
+        })
+        .done(function(r,textStatus,xhr){
+          alert(textStatus);
+            if(xhr.status==200){
+                location.reload(true);
+            }
+            else{
+                mensaje(textStatus);
+            }
+        }).fail(function (error) {
+            /**
+            * Primeramente convertimos el objeto Json string a un objeto de tipo JavaScript y 
+            * luego accedemos al valor que deseemos
+            */
+            var errorData = JSON.parse(error.responseText);
+            var messageText = errorData['__all__'][0];
+            mensaje(messageText);
+        });
+    });
+});
+</script>

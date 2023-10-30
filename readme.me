@@ -1,0 +1,11 @@
+Luego de haber separado los archivos de configuración, ya no podremos levantar de la misma forma el proyecto en local, ahora tendremos que indicar qué archivo setting debe utilizar de la siguiente forma:
+
+
+
+manage.py runserver --settings=app.local_settings
+
+
+
+Como podrás ver, a manage.py le adjuntamos el parámetro --settings con el valor de la nueva configuración del archivo settings local.
+
+Debes notar, que la ruta y nombre del archivo settings local abarca, la aplicación llamada app, un punto y luego el nombre del archivo settings, sin extensión, ésto para que lo tomes en cuenta y modifiques según tu proyecto, ya sea app o el nombre del archivo.
